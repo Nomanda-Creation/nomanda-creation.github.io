@@ -24,7 +24,11 @@ var searchFunc = function(path, search_id, content_id) {
   'use strict';
   var $input = document.getElementById(search_id);
   var $resultContent = document.getElementById(content_id);
-  $resultContent.innerHTML = '<div class="m-auto text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div><br/>Loading...</div>';
+
+  if ($resultContent.innerHTML.indexOf('list-group-item') === -1) {
+    $resultContent.innerHTML = '<div class="m-auto text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div><br/>Loading...</div>';
+  }
+
   $.ajax({
     // 0x01. load xml file
     url     : path,
@@ -38,7 +42,10 @@ var searchFunc = function(path, search_id, content_id) {
           url    : $('url', this).text()
         };
       }).get();
-      $resultContent.innerHTML = '';
+
+      if ($resultContent.innerHTML.indexOf('list-group-item') === -1) {
+        $resultContent.innerHTML = '';
+      }
 
       $input.addEventListener('input', function() {
         // 0x03. parse query to keywords list
@@ -109,7 +116,7 @@ var searchFunc = function(path, search_id, content_id) {
               // highlight all keywords
               keywords.forEach(function(keyword) {
                 var regS = new RegExp(keyword, 'gi');
-                match_content = match_content.replace(regS, '<span class=\'pink-text\'>' + keyword + '</span>');
+                match_content = match_content.replace(regS, '<span class="search-word">' + keyword + '</span>');
               });
 
               str += '<p class=\'search-list-content\'>' + match_content + '...</p>';
@@ -125,7 +132,8 @@ var searchFunc = function(path, search_id, content_id) {
       });
     }
   });
-  $(document).on('click', '#local-search-close', function() {
+
+  $('#local-search-close').on('click', function() {
     $('#local-search-input').val('').removeClass('invalid').removeClass('valid');
     $('#local-search-result').html('');
   });
